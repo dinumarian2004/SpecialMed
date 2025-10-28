@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Special Med Shop - Consumabile Medicale</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Setează fontul Inter pentru un aspect modern */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f7f7;
+            scroll-behavior: smooth; /* Pentru navigarea către secțiuni */
+        }
+        /* Stil pentru a face coșul de cumpărături să stea fix pe mobil */
+        #cart-sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(100%); /* Ascuns inițial pe dreapta pe mobil */
+        }
+        .cart-open #cart-sidebar {
+            transform: translateX(0); /* Vizibil pe mobil */
+        }
+        
+        /* Modificări pentru a rezolva suprapunerea pe desktop */
+        /* Header-ul trebuie să fie cel mai de sus element (z-index: 50) */
+        .sticky-header { 
+            position: sticky;
+            top: 0;
+            z-index: 50; /* Asigură că antetul este deasupra celorlalte elemente */
+        }
+
+        @media (min-width: 1024px) {
+            /* Pe desktop, coșul este permanent vizibil și nu folosește transform */
+            #cart-sidebar {
+                transform: translateX(0) !important;
+                position: static !important;
+                /* Asigură că sidebar-ul NU este fix pe desktop */
+            }
+        }
+
+        /* Asigură o înălțime fixă pentru imaginea placeholder */
+        .product-image {
+            width: 80px;
+            height: 80px;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header & Navbar (Am adăugat clasa sticky-header) -->
+    <header class="bg-white shadow-md sticky-header">
+        <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-orange-600">Special Med Shop</h1>
+            
+            <!-- Navbar Butoane (Desktop) -->
+            <nav class="hidden lg:flex space-x-6">
+                <a href="#produse-section" class="text-gray-700 hover:text-orange-600 font-medium transition duration-150 border-b-2 border-orange-600 pb-1">Produse</a>
+                <a href="#despre-section" class="text-gray-700 hover:text-orange-600 font-medium transition duration-150 border-b-2 border-transparent hover:border-orange-600 pb-1">Despre Noi</a>
+                <a href="#contact-section" class="text-gray-700 hover:text-orange-600 font-medium transition duration-150 border-b-2 border-transparent hover:border-orange-600 pb-1">Contact</a>
+            </nav>
+
+            <!-- Cart Button (Mobile) -->
+            <button id="toggle-cart-btn" class="p-2 rounded-full bg-orange-100 text-orange-600 hover:bg-orange-200 relative">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <span id="cart-item-count-mobile" class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">0</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto p-4 lg:flex lg:space-x-8">
+
+        <!-- Lista de Produse Section și Despre/Contact -->
+        <div class="lg:w-3/4 w-full">
+            
+            <!-- Despre Noi Section (Mutată în față cu textul original) -->
+            <section id="despre-section" class="mb-8 p-6 bg-white rounded-xl shadow-lg border-t-4 border-orange-500">
+                <h2 class="text-2xl font-bold mb-4 text-orange-600">Misiunea Special Med Shop</h2>
+                <p class="text-gray-700 mb-4">SPECIALMED continuă să ducă la îndeplinire misiunea asumată acum mai bine de 12 ani și anume sprijinirea creșterii calității actului medical, prin asigurarea de consumabile medicale, dezinfectanți, mobilier medical și servicii conexe cât mai complete și de calitate, accesibile personalului medical.</p>
+                
+                <h3 class="text-xl font-semibold text-gray-800 mb-3">De ce să ne alegeți? (Strategie de comunicare diferită)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
+                    
+                    <!-- Punct 1: Analiza si rapoarte de consum -->
+                    <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 20 20" fill="currentColor"><path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" /></svg>
+                        <span><span class="font-bold">Analiză de Consum:</span> Analizăm și oferim rapoarte de consum pe produsele cumpărate de către client.</span>
+                    </div>
+
+                    <!-- Punct 2: Suport comenzi -->
+                    <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2zm0-8h2v6h-2z"/></svg>
+                        <span><span class="font-bold">Suport Dedicat:</span> Suport pentru comenzi în funcție de stoc și consum (telefonic, WhatsApp, mail).</span>
+                    </div>
+
+                    <!-- Punct 3: Prezentare de produse gratuit -->
+                    <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+                        <span><span class="font-bold">Prezentare Gratuită:</span> Oferim prezentare de produse gratuit.</span>
+                    </div>
+
+                    <!-- Punct 6: Suport contabil / Termene de plata flexibile (MUTAT ÎN POZIȚIA 4) -->
+                    <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
+                        <span><span class="font-bold">Flexibilitate Financiară:</span> Suport contabil cu raport de facturi scadente și termene de plată flexibile.</span>
+                    </div>
+
+                    <!-- Punct 4: Retur 30 de zile (MUTAT ÎN POZIȚIA 5) -->
+                    <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.25 15.25a.75.75 0 0 0-1.5 0v3.5a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5v-3.5a.75.75 0 0 0-1.5 0v3.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-3.5zm-8.25-8.5v11.5m3-8.5l-3-3-3 3"/></svg>
+                        <span><span class="font-bold">Retur 30 Zile:</span> Posibilitate de retur timp de 30 de zile pentru produsele neconsumate (în ambalaj original, nedeteriorat).</span>
+                    </div>
+
+                    <!-- Punct 5: Livrare gratuita Bucuresti -->
+                    <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span><span class="font-bold">Livrare/Retur Gratuit:</span> Livrarea și returul produselor sunt gratuite în București.</span>
+                    </div>
+
+                    <!-- Punct 7: Instiintare oferte speciale -->
+                    <div class="flex items-start space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <span><span class="font-bold">Notificări:</span> Vă înștiințăm prin SMS, Mail sau WhatsApp despre ofertele speciale lunare.</span>
+                    </div>
+                </div>
+                <p class="pt-6 font-bold text-gray-800 text-center text-xl">Suntem speciali pentru că excelăm prin promptitudine, calitate, flexibilitate, prețuri competitive!</p>
+            </section>
+            
+            <!-- Lista de Produse Section -->
+            <section id="produse-section" class="pt-2">
+                <h2 class="text-3xl font-semibold mb-6 text-gray-800 border-b pb-2">Produse Disponibile</h2>
+                <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Produsele vor fi generate aici de JavaScript -->
+                    <div id="loading-spinner" class="col-span-full flex justify-center items-center py-12">
+                        <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Se încarcă produsele...
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Section (Mutată la final, dar încă accesibilă prin link) -->
+            <section id="contact-section" class="mt-16 pt-16 border-t border-gray-300 mb-10">
+                <h2 class="text-3xl font-semibold mb-6 text-gray-800 border-b pb-2">Contact</h2>
+                <div class="bg-white p-6 rounded-xl shadow-lg space-y-4">
+                    <p class="text-lg font-medium text-orange-600">SC SPECIALMED DISTRIBUTION TECH SRL</p>
+                    <p class="text-gray-700">Sediu: București, Str Compozitorilor, Nr. 10, România</p>
+                    <div class="flex items-center space-x-2 text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        <span>Tel: 0765.32.89.45</span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-gray-700">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-1 8a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h12a2 2 0 012 2v10z" /></svg>
+                        <span>Email: <a href="mailto:vanzari.specialmed@gmail.com" class="text-blue-600 hover:text-blue-800">vanzari.specialmed@gmail.com</a></span>
+                    </div>
+                    
+                    <!-- Secțiunea despre Managerul Zonal a fost eliminată -->
+
+                </div>
+            </section>
+        </div>
+
+        <!-- Coș de Cumpărături (Sidebar) -->
+        <!-- Pe desktop, coșul este parte din layout-ul normal (nu fixed) și se scrollează odată cu pagina -->
+        <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full lg:w-1/4 max-w-sm bg-white shadow-xl p-6 border-l border-gray-100 z-20 lg:static lg:block lg:shadow-none lg:border-none">
+            <div class="flex justify-between items-center mb-6 lg:hidden">
+                <h3 class="text-xl font-semibold text-gray-700">Coșul Meu</h3>
+                <button id="close-cart-btn" class="text-gray-400 hover:text-gray-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            
+            <h3 class="hidden lg:block text-xl font-semibold text-gray-700 mb-4 border-b pb-2">Coșul Meu</h3>
+
+            <div id="cart-items-container" class="space-y-4 max-h-[60vh] overflow-y-auto mb-4">
+                <p id="empty-cart-message" class="text-gray-500 text-center py-4">Coșul este gol.</p>
+                <!-- Produsele din coș vor fi adăugate aici -->
+            </div>
+
+            <!-- Total -->
+            <div class="border-t pt-4 space-y-3">
+                <div class="flex justify-between font-medium text-gray-700">
+                    <span>Subtotal:</span>
+                    <span id="cart-subtotal">0.00 RON</span>
+                </div>
+                <div class="flex justify-between font-medium text-gray-700">
+                    <span>TVA (19%):</span>
+                    <span id="cart-tax">0.00 RON</span>
+                </div>
+                <div class="flex justify-between text-xl font-bold text-orange-600 border-t pt-2">
+                    <span>TOTAL:</span>
+                    <span id="cart-total">0.00 RON</span>
+                </div>
+            </div>
+
+            <!-- Buton Comandă -->
+            <button id="checkout-btn" class="mt-6 w-full py-3 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition duration-150 disabled:opacity-50" disabled>
+                Plasează Comanda
+            </button>
+            <p id="checkout-status" class="mt-3 text-sm text-center"></p>
+
+            <button id="clear-cart-btn" class="mt-2 w-full text-sm py-2 text-red-500 border border-red-300 rounded-lg hover:bg-red-50 transition duration-150" disabled>
+                Golește Coșul
+            </button>
+        </div>
+
+    </main>
+
+    <!-- Modal pentru comanda prin email -->
+    <div id="email-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 z-50 hidden items-center justify-center p-4">
+        <div class="bg-white rounded-xl p-8 w-full max-w-lg shadow-2xl">
+            <h3 class="text-2xl font-bold mb-4 text-gray-800">Finalizare Comandă</h3>
+            
+            <p class="text-gray-600 mb-6">Comanda va fi trimisă pe email după ce completați și trimiteți datele de livrare.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="nume-client" class="block text-sm font-medium text-gray-700">Nume Client / Companie <span class="text-red-500">*</span></label>
+                    <input type="text" id="nume-client" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-orange-500 focus:border-orange-500" required>
+                </div>
+                <div>
+                    <label for="adresa-client" class="block text-sm font-medium text-gray-700">Adresă Livrare <span class="text-red-500">*</span></label>
+                    <textarea id="adresa-client" rows="3" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-orange-500 focus:border-orange-500" required></textarea>
+                </div>
+                <div>
+                    <label for="telefon-client" class="block text-sm font-medium text-gray-700">Telefon Contact <span class="text-red-500">*</span></label>
+                    <input type="tel" id="telefon-client" class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-3 focus:ring-orange-500 focus:border-orange-500" required>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-4 mt-6">
+                <button id="cancel-modal-btn" class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-100 transition duration-150">Anulează</button>
+                <button id="send-order-btn" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition duration-150">Trimit Comanda</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // Funcție ajutătoare pentru a genera un placeholder în funcție de categorie
+        const generatePlaceholder = (category, text) => {
+            let color, bgColor;
+            switch (category) {
+                case 'prp':
+                    color = 'ffffff'; bgColor = 'FF8C00'; // Orange pentru PRP
+                    break;
+                case 'dezinf':
+                    color = 'ffffff'; bgColor = '008080'; // Teal pentru Dezinfectanți
+                    break;
+                case 'aparatura':
+                    color = 'ffffff'; bgColor = '4682B4'; // Albastru pentru Aparatură
+                    break;
+                case 'consumabile':
+                default:
+                    color = 'ffffff'; bgColor = '32CD32'; // Verde deschis pentru Consumabile
+                    break;
+            }
+            return `https://placehold.co/80x80/${bgColor}/${color}?text=${text}`;
+        };
+
+        // Datele extrase din oferta PDF
+        // Structura: { id: 'p1', name: 'Nume Produs', price_tva: 35.70, unit: 'CUT', image: 'url' }
+        const PRODUCTS_DATA = [
+            // Produs special cu pret in EURO, convertim in RON pt consistenta (presupunand 1 EUR = 5 RON)
+            { id: 'prp', name: 'EPRUBETA PRP T-LAB PREMIUM (Set 2 eprubete)', price_tva: 15 * 5, unit: 'SET', image: generatePlaceholder('prp', 'PRP') }, 
+            
+            // Consumabile Medicale (prețuri în RON cu TVA)
+            { id: 'c1', name: 'Crema anestezica cu lidocaina 500 gr', price_tva: 690.00, unit: 'BUC', image: generatePlaceholder('consumabile', 'Crema') },
+            { id: 'c2', name: 'Ace seringa 20G (0,9x70mm), 100buc/cut - lungi', price_tva: 61.88, unit: 'CUT', image: generatePlaceholder('consumabile', 'Ace') },
+            { id: 'c3', name: 'Ace BD seringa 30G (0,3x13mm) 100buc/cut - scurte', price_tva: 35.70, unit: 'CUT', image: generatePlaceholder('consumabile', 'Ace') },
+            { id: 'c4', name: 'Ace mezoterapie albastre 31G (0,26mm X 4mm) Meso-Relle 100buc/cutie', price_tva: 237.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Mezo') },
+            { id: 'c5', name: 'Ace mezoterapie albastre 32G (0,26mm X 4mm) Meso-Relle 100buc/cutie', price_tva: 268.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Mezo') },
+            { id: 'c6', name: 'Ac seringa 18-26 G, 100buc/cutie', price_tva: 17.85, unit: 'CUT', image: generatePlaceholder('consumabile', 'Seringi') },
+            { id: 'c7', name: 'TEST RAPID ANTIGEN NAZAL COVID 19', price_tva: 19.04, unit: 'BUC', image: generatePlaceholder('consumabile', 'Test') },
+            { id: 'c8', name: 'Fluturas recoltare cu adaptor luer-lock 21g verde, 100buc/cut', price_tva: 0.83, unit: 'BUC', image: generatePlaceholder('consumabile', 'Recolt') },
+            { id: 'c9', name: 'Holder eprubeta uf', price_tva: 0.36, unit: 'BUC', image: generatePlaceholder('consumabile', 'Holder') },
+            { id: 'c10', name: 'Cateter (branula cu valva) cu 2 cai 18-24 G 100buc/cut', price_tva: 1.43, unit: 'BUC', image: generatePlaceholder('consumabile', 'Branula') },
+            { id: 'c11', name: 'Trusa perfuzie cu ac plastic 25buc/pg', price_tva: 1.79, unit: 'BUC', image: generatePlaceholder('consumabile', 'Perfuz') },
+            { id: 'c12', name: 'Alcool sanitar 70% PET 0.5 litri', price_tva: 8.00, unit: 'STICLA', image: generatePlaceholder('consumabile', 'Alcool') },
+            { id: 'c13', name: 'Apa oxigenata 3% - 200 ml', price_tva: 8.33, unit: 'STICLA', image: generatePlaceholder('consumabile', 'Apa') },
+            { id: 'c14', name: 'Rivanol 0.1% - 200 ml', price_tva: 7.14, unit: 'STICLA', image: generatePlaceholder('consumabile', 'Rivanol') },
+            { id: 'c15', name: 'Apasatoare limba, sterile, ambalate individual 100 buc/cutie', price_tva: 17.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Limba') },
+            { id: 'c16', name: 'Ace pentru intepator glucometru 25buc/pg', price_tva: 8.33, unit: 'PG', image: generatePlaceholder('consumabile', 'Gluco') },
+            { id: 'c17', name: 'Teste glicemie eBsensor 50buc/cut', price_tva: 65.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Teste') },
+            { id: 'c18', name: 'Rola cearceaf unica folosinta hartie 50 cm x 50 m', price_tva: 23.00, unit: 'ROLA', image: generatePlaceholder('consumabile', 'Cearsaf') },
+            { id: 'c19', name: 'Rola cearceaf unica folosinta hartie 60 cm x 50 m', price_tva: 29.99, unit: 'ROLA', image: generatePlaceholder('consumabile', 'Cearsaf') },
+            { id: 'c20', name: 'Rola prosop hartie 4 STRATURI - Super Absorbant', price_tva: 15.47, unit: 'ROLA', image: generatePlaceholder('consumabile', 'Prosop') },
+            { id: 'c21', name: 'Rola prosop hartie 2 STRATURI, 230 foi', price_tva: 10.00, unit: 'ROLA', image: generatePlaceholder('consumabile', 'Prosop') },
+            { id: 'c22', name: 'Prosopape hartie 2 str, pliate albe Z - pentru dispenser', price_tva: 9.50, unit: 'PAC', image: generatePlaceholder('consumabile', 'Pliate') },
+            { id: 'c23', name: 'Lenjerie pat unica folosinta 40 gr/mp (SET)', price_tva: 24.99, unit: 'SET', image: generatePlaceholder('consumabile', 'Lenjerie') },
+            { id: 'c24', name: 'Husa pat unica folosinta IMPERMEABILA 90x225 cm', price_tva: 8.33, unit: 'BUC', image: generatePlaceholder('consumabile', 'Husa') },
+            { id: 'c25', name: 'Halat de unica folosinta cu legaturi 20gr/m2 -Alb', price_tva: 4.00, unit: 'BUC', image: generatePlaceholder('consumabile', 'Halat') },
+            { id: 'c26', name: 'Halat chirurgical steril unica folosinta ranforsat', price_tva: 14.50, unit: 'BUC', image: generatePlaceholder('consumabile', 'Chirg') },
+            { id: 'c27', name: 'Papuci unica folosinta acoperiti la varf 100buc/cutie', price_tva: 69.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Papuci') },
+            { id: 'c28', name: 'Acoperitori pantofi PVC - albastri - 100buc/ cutie dispenser', price_tva: 14.99, unit: 'BUC', image: generatePlaceholder('consumabile', 'Botosei') },
+            { id: 'c29', name: 'Bonete netesute cu elastic- 100buc/cutie', price_tva: 14.99, unit: 'BUC', image: generatePlaceholder('consumabile', 'Bonete') },
+            { id: 'c30', name: 'Masti protectie 3 straturi cu elastic - 50 buc/cutie', price_tva: 14.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Masti') },
+            { id: 'c31', name: 'Masti protectie respiratorie KN 95 (10 buc/cut)', price_tva: 2.00, unit: 'BUC', image: generatePlaceholder('consumabile', 'KN95') },
+            { id: 'c32', name: 'Manusi chirurgicale sterile 50 perechi/cutie, nr 6-8', price_tva: 2.50, unit: 'PER', image: generatePlaceholder('consumabile', 'Manusi') },
+            { id: 'c33', name: 'Manusi examinare - PUDRATE din LATEX - 100 buc/cutie', price_tva: 23.80, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
+            { id: 'c34', name: 'Manusi examinare - NEPUDRATE din LATEX - 100 buc/cutie', price_tva: 24.99, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
+            { id: 'c35', name: 'Manusi examinare NEPUDRATE din NITRIL ALBASTRE - 100 buc/cutie', price_tva: 22.60, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
+            { id: 'c36', name: 'Manusi examinare NEPUDRATE din NITRIL NEGRE - 100 buc/cutie', price_tva: 22.60, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
+            { id: 'c37', name: 'Comprese sterile tifon bumbac 100% 10x10 cm (5 comprese/blister)', price_tva: 2.30, unit: 'BLISTER', image: generatePlaceholder('consumabile', 'Comp') },
+            { id: 'c38', name: 'Comprese sterile tifon bumbac 100% 5x5 cm (5 comprese/blister)', price_tva: 1.30, unit: 'BLISTER', image: generatePlaceholder('consumabile', 'Comp') },
+            { id: 'c39', name: 'Fesi tifon 100% bumbac 10 cm x 10 m', price_tva: 3.57, unit: 'BUC', image: generatePlaceholder('consumabile', 'Fasa') },
+            { id: 'c40', name: 'Fesi tifon 100% bumbac 20 cm x 10 m', price_tva: 4.76, unit: 'BUC', image: generatePlaceholder('consumabile', 'Fasa') },
+            { id: 'c41', name: 'Leucoplast rola hartie 5 cm x 5 m', price_tva: 4.17, unit: 'ROLA', image: generatePlaceholder('consumabile', 'Plast') },
+            { id: 'c42', name: 'Leucoplast rola plastic 5 cm x 5 m', price_tva: 5.00, unit: 'ROLA', image: generatePlaceholder('consumabile', 'Plast') },
+            { id: 'c43', name: 'Plasturi rotunzi post-recoltare, 100buc/cut', price_tva: 7.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Plast') },
+            { id: 'c44', name: 'Plasturi dreptunghiulari 19x72mm, 100buc/PAC', price_tva: 9.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Plast') },
+            { id: 'c45', name: 'Tampoane cu alcool, sterile, ambalate individual 200buc/cut', price_tva: 17.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Tampoane') },
+            { id: 'c46', name: 'Seringi 1 ml UF cu ac detasabil 100buc/cutie', price_tva: 0.46, unit: 'BUC', image: generatePlaceholder('consumabile', 'Seringi') },
+            { id: 'c47', name: 'Seringi 2 ml UF cu ac 100buc/cutie', price_tva: 0.38, unit: 'BUC', image: generatePlaceholder('consumabile', 'Seringi') },
+            { id: 'c48', name: 'Seringi 5 ml UF cu ac 100buc/cutie', price_tva: 0.42, unit: 'BUC', image: generatePlaceholder('consumabile', 'Seringi') },
+            { id: 'c49', name: 'Seringi 10 ml UF cu ac 100buc/cutie', price_tva: 0.50, unit: 'BUC', image: generatePlaceholder('consumabile', 'Seringi') },
+            { id: 'c50', name: 'Seringi 20 ml UF cu ac 50buc/cutie', price_tva: 0.71, unit: 'BUC', image: generatePlaceholder('consumabile', 'Seringi') },
+            { id: 'c51', name: 'Vata hidrofila 200 g', price_tva: 7.00, unit: 'PAC', image: generatePlaceholder('consumabile', 'Vata') },
+            
+            // Dezinfecție și Laborator
+            { id: 'd1', name: 'Dezinfectant si antiseptic MAINI/suprafete ASOSEPTIS BEZ 500 ML', price_tva: 22.00, unit: 'BUC', image: generatePlaceholder('dezinf', 'Dezinfect') },
+            { id: 'd2', name: 'Dezinfectant si antiseptic SUPRAFETE/maini ASOSEPTIS BEZ 1L', price_tva: 30.00, unit: 'BUC', image: generatePlaceholder('dezinf', 'Dezinfect') },
+            { id: 'd3', name: 'Dezinfectant solid pardoseli CLOROM tablete 200 buc/cut', price_tva: 70.00, unit: 'CUT', image: generatePlaceholder('dezinf', 'Clorom') },
+            { id: 'd4', name: 'KLINTENSIV- dezinfectant instrumentar concentrat 1L', price_tva: 112.00, unit: 'BUC', image: generatePlaceholder('dezinf', 'Instrum') },
+            { id: 'l1', name: 'Set Recoltare 21,23G (fluturas+adaptor) 100 buc/cut', price_tva: 0.83, unit: 'BUC', image: generatePlaceholder('dezinf', 'Recolt') },
+            { id: 'l2', name: 'Microperfuzoare pentru copii', price_tva: 0.54, unit: 'BUC', image: generatePlaceholder('dezinf', 'Micro') },
+            { id: 'l3', name: 'Exudat faringian steril in tub, cu mediu de cultura', price_tva: 2.14, unit: 'BUC', image: generatePlaceholder('dezinf', 'Exudat') },
+
+            // Aparatură și Mobilier (Prețuri mari, pentru demonstrație)
+            { id: 'a1', name: 'Masuta inox 2 blaturi, pe roti, L71x41xH81 cm', price_tva: 952.00, unit: 'BUC', image: generatePlaceholder('aparatura', 'Masa') },
+            { id: 'a2', name: 'Canapea consultatii cap rabatabil', price_tva: 1570.00, unit: 'BUC', image: generatePlaceholder('aparatura', 'Canapea') },
+            { id: 'a3', name: 'Electrocardiograf Contec', price_tva: 4165.00, unit: 'BUC', image: generatePlaceholder('aparatura', 'EKG') },
+            { id: 'a4', name: 'Tensiometru electronic brat cu tehnologie Gentle+', price_tva: 273.70, unit: 'BUC', image: generatePlaceholder('aparatura', 'Tensiom') },
+
+        ];
+        
+        // Coșul de Cumpărături
+        let cart = {}; // { 'p1': { product: {...}, quantity: 2 }, ... }
+
+        // Elementele DOM
+        const productListEl = document.getElementById('product-list');
+        const emptyCartMessageEl = document.getElementById('empty-cart-message');
+        const cartItemsContainerEl = document.getElementById('cart-items-container');
+        const cartSubtotalEl = document.getElementById('cart-subtotal');
+        const cartTaxEl = document.getElementById('cart-tax');
+        const cartTotalEl = document.getElementById('cart-total');
+        const cartItemCountMobileEl = document.getElementById('cart-item-count-mobile');
+        const checkoutBtn = document.getElementById('checkout-btn');
+        const clearCartBtn = document.getElementById('clear-cart-btn');
+        const toggleCartBtn = document.getElementById('toggle-cart-btn');
+        const closeCartBtn = document.getElementById('close-cart-btn');
+        const cartSidebarEl = document.getElementById('cart-sidebar');
+        const emailModalEl = document.getElementById('email-modal');
+        const cancelModalBtn = document.getElementById('cancel-modal-btn');
+        const sendOrderBtn = document.getElementById('send-order-btn');
+        const checkoutStatusEl = document.getElementById('checkout-status');
+        
+        const VAT_RATE = 0.19; // 19% TVA
+
+        // Funcții Utilitare
+        
+        /** Formatează o sumă ca RON */
+        const formatPrice = (price) => {
+            return price.toFixed(2).replace('.', ',') + ' RON';
+        };
+
+        /** Calculează subtotal, TVA și Total */
+        const calculateTotals = () => {
+            let subtotal = 0;
+            for (const id in cart) {
+                const item = cart[id];
+                // Prețul cu TVA (price_tva) conține deja TVA. 
+                // Pentru subtotal (fără TVA), calculăm prețul de bază.
+                const price_base = item.product.price_tva / (1 + VAT_RATE);
+                subtotal += price_base * item.quantity;
+            }
+
+            const tax = subtotal * VAT_RATE;
+            const total = subtotal + tax;
+
+            return { subtotal, tax, total };
+        };
+
+        /** Actualizează vizual coșul de cumpărături */
+        const renderCart = () => {
+            const items = Object.values(cart);
+            cartItemsContainerEl.innerHTML = '';
+            
+            if (items.length === 0) {
+                emptyCartMessageEl.style.display = 'block';
+                checkoutBtn.disabled = true;
+                clearCartBtn.disabled = true;
+                cartItemCountMobileEl.textContent = '0';
+            } else {
+                emptyCartMessageEl.style.display = 'none';
+                checkoutBtn.disabled = false;
+                clearCartBtn.disabled = false;
+                cartItemCountMobileEl.textContent = items.reduce((sum, item) => sum + item.quantity, 0);
+
+                items.forEach(item => {
+                    // Scoaterea imaginii din cos pentru o lista mai concisa
+                    const cartItemEl = document.createElement('div');
+                    cartItemEl.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg';
+                    cartItemEl.innerHTML = `
+                        <div class="flex-grow">
+                            <p class="text-sm font-semibold text-gray-800">${item.product.name}</p>
+                            <p class="text-xs text-gray-500">${formatPrice(item.product.price_tva)} / ${item.product.unit}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity('${item.product.id}', -1)" class="text-gray-500 hover:text-red-500 font-bold w-6 h-6 rounded-full border border-gray-300">-</button>
+                            <span class="text-sm font-medium">${item.quantity}</span>
+                            <button onclick="updateQuantity('${item.product.id}', 1)" class="text-gray-500 hover:text-green-500 font-bold w-6 h-6 rounded-full border border-gray-300">+</button>
+                        </div>
+                    `;
+                    cartItemsContainerEl.appendChild(cartItemEl);
+                });
+            }
+
+            const totals = calculateTotals();
+            cartSubtotalEl.textContent = formatPrice(totals.subtotal);
+            cartTaxEl.textContent = formatPrice(totals.tax);
+            cartTotalEl.textContent = formatPrice(totals.total);
+        };
+
+        /** Adaugă / Elimină din coș */
+        window.updateQuantity = (productId, change) => {
+            const product = PRODUCTS_DATA.find(p => p.id === productId);
+            if (!product) return;
+
+            if (!cart[productId]) {
+                cart[productId] = { product, quantity: 0 };
+            }
+
+            cart[productId].quantity += change;
+
+            if (cart[productId].quantity <= 0) {
+                delete cart[productId];
+            }
+            
+            // Force quantity input update if it exists (for the product list)
+            const inputEl = document.getElementById('qty-' + productId);
+            if(inputEl) {
+                inputEl.value = cart[productId] ? cart[productId].quantity : 0;
+            }
+
+            renderCart();
+        };
+
+        /** Golește Coșul */
+        const clearCart = () => {
+            cart = {};
+            // Reset quantity inputs on the product list
+            PRODUCTS_DATA.forEach(p => {
+                const inputEl = document.getElementById('qty-' + p.id);
+                if(inputEl) {
+                    inputEl.value = 0;
+                }
+            });
+            renderCart();
+            checkoutStatusEl.textContent = ''; // Șterge mesajul de status după golire
+        }
+
+        /** Generează produsele vizual pe pagină */
+        const renderProducts = () => {
+            document.getElementById('loading-spinner').style.display = 'none';
+
+            PRODUCTS_DATA.forEach(product => {
+                const productEl = document.createElement('div');
+                productEl.className = 'bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between';
+                
+                // Prețul pe unitate fără TVA
+                const price_base = product.price_tva / (1 + VAT_RATE);
+
+                productEl.innerHTML = `
+                    <!-- Secțiunea de Imagine și Descriere -->
+                    <div class="flex items-start space-x-4 mb-4">
+                        <img src="${product.image}" alt="${product.name}" 
+                             class="product-image object-cover rounded-lg border border-gray-200 shadow-sm"
+                             onerror="this.onerror=null; this.src='https://placehold.co/80x80/cccccc/333333?text=Produs';">
+                        <div class="flex-grow space-y-1">
+                            <h3 class="text-lg font-bold text-gray-800">${product.name}</h3>
+                            <p class="text-sm text-gray-600">Unitate: ${product.unit}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Secțiunea de Preț și Acțiune -->
+                    <div class="space-y-2 pt-2 border-t border-gray-100">
+                        <p class="text-xl font-extrabold text-orange-600">${formatPrice(product.price_tva)} <span class="text-sm font-medium text-gray-500">(cu TVA)</span></p>
+                        <p class="text-xs text-gray-400">(${formatPrice(price_base)} fără TVA)</p>
+                        
+                        <div class="mt-4 flex items-center space-x-3">
+                            <input id="qty-${product.id}" type="number" min="0" value="0" data-product-id="${product.id}" class="w-16 p-2 border border-gray-300 rounded-lg text-center focus:ring-orange-500 focus:border-orange-500" 
+                                onchange="handleInputChange(this)">
+                            <button onclick="updateQuantity('${product.id}', 1)" class="flex-grow p-2 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition duration-150 flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Adaugă
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productListEl.appendChild(productEl);
+            });
+        };
+        
+        /** Gestionează schimbarea cantității direct din input */
+        window.handleInputChange = (input) => {
+            const productId = input.getAttribute('data-product-id');
+            const newQuantity = parseInt(input.value) || 0;
+
+            const currentQuantity = cart[productId] ? cart[productId].quantity : 0;
+            const change = newQuantity - currentQuantity;
+
+            // Folosim updateQuantity pentru a aplica logica de adăugare/ștergere
+            updateQuantity(productId, change);
+
+            // Ne asigurăm că valoarea inputului este actualizată corect după logica coșului (ex: nu poate fi negativ)
+            input.value = cart[productId] ? cart[productId].quantity : 0;
+        }
+
+
+        /** Generează link-ul de email */
+        const generateMailtoLink = () => {
+            const items = Object.values(cart);
+            const totals = calculateTotals();
+            const clientName = document.getElementById('nume-client').value.trim();
+            const clientAddress = document.getElementById('adresa-client').value.trim();
+            const clientPhone = document.getElementById('telefon-client').value.trim();
+            const recipientEmail = "vanzari.specialmed@gmail.com";
+            
+            // Construiește corpul comenzii
+            let orderDetails = "Detalii Comanda:\n\n";
+            items.forEach((item, index) => {
+                orderDetails += `${index + 1}. ${item.product.name} (Unitate: ${item.product.unit})\n`;
+                orderDetails += `   - Cantitate: ${item.quantity}\n`;
+                orderDetails += `   - Preț/Unitate (cu TVA): ${formatPrice(item.product.price_tva)}\n`;
+                orderDetails += `   - Total Articol (cu TVA): ${formatPrice(item.product.price_tva * item.quantity)}\n\n`;
+            });
+
+            const summary = `\n-- SUMAR FINANCIAR --
+Subtotal (fără TVA): ${formatPrice(totals.subtotal)}
+TVA (19%): ${formatPrice(totals.tax)}
+TOTAL General (cu TVA): ${formatPrice(totals.total)}
+
+-- DETALII CLIENT ȘI LIVRARE --
+Nume Client/Companie: ${clientName}
+Telefon Contact: ${clientPhone}
+Adresă Livrare: ${clientAddress}
+`;
+            
+            const emailBody = encodeURIComponent(orderDetails + summary);
+            const emailSubject = encodeURIComponent(`COMANDA NOUA - ${clientName} - TOTAL ${formatPrice(totals.total)}`);
+
+            return `mailto:${recipientEmail}?subject=${emailSubject}&body=${emailBody}`;
+        };
+
+
+        // --- Inițializare și Evenimente ---
+
+        // 1. Inițializează produsele și coșul
+        window.onload = () => {
+            renderProducts();
+            renderCart(); // Inițializează vizualizarea coșului
+        };
+
+
+        // 2. Evenimente Buton Coș (Mobile/Desktop)
+        toggleCartBtn.addEventListener('click', () => {
+            // Logica Mobile (afisare sidebar)
+            if (window.innerWidth < 1024) {
+                document.body.classList.add('cart-open');
+            } else {
+                // Logica Desktop (scroll la cos)
+                cartSidebarEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+
+        closeCartBtn.addEventListener('click', () => {
+            document.body.classList.remove('cart-open');
+        });
+
+        // 3. Evenimente Butoane Checkout
+        checkoutBtn.addEventListener('click', () => {
+            if (Object.keys(cart).length > 0) {
+                // Afișează modalul de finalizare
+                emailModalEl.classList.remove('hidden');
+                emailModalEl.classList.add('flex');
+            }
+        });
+
+        cancelModalBtn.addEventListener('click', () => {
+            // Ascunde modalul
+            emailModalEl.classList.add('hidden');
+            emailModalEl.classList.remove('flex');
+        });
+        
+        clearCartBtn.addEventListener('click', clearCart);
+
+
+        // 4. Eveniment Trimitere Comandă
+        sendOrderBtn.addEventListener('click', () => {
+            const clientName = document.getElementById('nume-client').value.trim();
+            const clientAddress = document.getElementById('adresa-client').value.trim();
+            const clientPhone = document.getElementById('telefon-client').value.trim();
+
+            if (!clientName || !clientAddress || !clientPhone) {
+                checkoutStatusEl.textContent = 'Vă rugăm completați toate câmpurile obligatorii.';
+                checkoutStatusEl.className = 'mt-3 text-sm text-center text-red-500';
+                return;
+            }
+
+            const mailtoLink = generateMailtoLink();
+            
+            // Deschide clientul de email
+            window.location.href = mailtoLink;
+
+            // Simulează succesul, chiar dacă trimiterea reală depinde de clientul de email al userului
+            checkoutStatusEl.textContent = 'Comanda a fost generată! Deschideți clientul de email pentru a o trimite.';
+            checkoutStatusEl.className = 'mt-3 text-sm text-center text-green-600 font-semibold';
+            
+            // Curăță coșul și închide modalul după generarea comenzii
+            setTimeout(() => {
+                clearCart();
+                emailModalEl.classList.add('hidden');
+                emailModalEl.classList.remove('flex');
+                document.getElementById('nume-client').value = '';
+                document.getElementById('adresa-client').value = '';
+                document.getElementById('telefon-client').value = '';
+            }, 1000);
+        });
+
+    </script>
+</body>
+</html>
