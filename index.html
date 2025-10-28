@@ -43,6 +43,12 @@
             width: 80px;
             height: 80px;
         }
+        /* Stil nou pentru butoanele de Adăugare la coș */
+        .add-to-cart-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -130,7 +136,8 @@
             <!-- Lista de Produse Section -->
             <section id="produse-section" class="pt-2">
                 <h2 class="text-3xl font-semibold mb-6 text-gray-800 border-b pb-2">Produse Disponibile</h2>
-                <div id="product-list" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Schimbarea grid-cols-2 cu grid-cols-1 pentru a face produsele mai lungi și mai subțiri -->
+                <div id="product-list" class="grid grid-cols-1 gap-4"> 
                     <!-- Produsele vor fi generate aici de JavaScript -->
                     <div id="loading-spinner" class="col-span-full flex justify-center items-center py-12">
                         <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-orange-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -264,7 +271,7 @@
         };
 
         // Datele extrase din oferta PDF
-        // Structura: { id: 'p1', name: 'Nume Produs', price_tva: 35.70, unit: 'CUT', image: 'url' }
+        // Am combinat produsele similare de mănuși într-un singur produs logic cu variații (sizes)
         const PRODUCTS_DATA = [
             // Produs special cu pret in EURO, convertim in RON pt consistenta (presupunand 1 EUR = 5 RON)
             { id: 'prp', name: 'EPRUBETA PRP T-LAB PREMIUM (Set 2 eprubete)', price_tva: 15 * 5, unit: 'SET', image: generatePlaceholder('prp', 'PRP') }, 
@@ -301,11 +308,15 @@
             { id: 'c29', name: 'Bonete netesute cu elastic- 100buc/cutie', price_tva: 14.99, unit: 'BUC', image: generatePlaceholder('consumabile', 'Bonete') },
             { id: 'c30', name: 'Masti protectie 3 straturi cu elastic - 50 buc/cutie', price_tva: 14.00, unit: 'CUT', image: generatePlaceholder('consumabile', 'Masti') },
             { id: 'c31', name: 'Masti protectie respiratorie KN 95 (10 buc/cut)', price_tva: 2.00, unit: 'BUC', image: generatePlaceholder('consumabile', 'KN95') },
-            { id: 'c32', name: 'Manusi chirurgicale sterile 50 perechi/cutie, nr 6-8', price_tva: 2.50, unit: 'PER', image: generatePlaceholder('consumabile', 'Manusi') },
-            { id: 'c33', name: 'Manusi examinare - PUDRATE din LATEX - 100 buc/cutie', price_tva: 23.80, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
-            { id: 'c34', name: 'Manusi examinare - NEPUDRATE din LATEX - 100 buc/cutie', price_tva: 24.99, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
-            { id: 'c35', name: 'Manusi examinare NEPUDRATE din NITRIL ALBASTRE - 100 buc/cutie', price_tva: 22.60, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
-            { id: 'c36', name: 'Manusi examinare NEPUDRATE din NITRIL NEGRE - 100 buc/cutie', price_tva: 22.60, unit: 'CUT', image: generatePlaceholder('consumabile', 'Manusi') },
+            { id: 'c32', name: 'Manusi chirurgicale sterile 50 perechi/cutie', price_tva: 2.50, unit: 'PER', image: generatePlaceholder('consumabile', 'Manusi'), sizes: ['6', '7', '8'] }, // Cu mărimi
+            
+            // Mănuși de examinare (adăugate ca produse distincte)
+            { id: 'm1', name: 'Manusi examinare - PUDRATE din LATEX - 100 buc/cutie', price_tva: 23.80, unit: 'CUT', image: generatePlaceholder('consumabile', 'Latex P'), sizes: ['S', 'M', 'L'] },
+            { id: 'm2', name: 'Manusi examinare - NEPUDRATE din LATEX - 100 buc/cutie', price_tva: 24.99, unit: 'CUT', image: generatePlaceholder('consumabile', 'Latex NP'), sizes: ['S', 'M', 'L'] },
+            { id: 'm3', name: 'Manusi examinare NEPUDRATE din NITRIL ALBASTRE - 100 buc/cutie', price_tva: 22.60, unit: 'CUT', image: generatePlaceholder('consumabile', 'Nitril A'), sizes: ['S', 'M', 'L'] },
+            { id: 'm4', name: 'Manusi examinare NEPUDRATE din NITRIL NEGRE - 100 buc/cutie', price_tva: 22.60, unit: 'CUT', image: generatePlaceholder('consumabile', 'Nitril N'), sizes: ['XS', 'S', 'M', 'L'] },
+            
+            // Am eliminat cele 4 intrări vechi de mănuși
             { id: 'c37', name: 'Comprese sterile tifon bumbac 100% 10x10 cm (5 comprese/blister)', price_tva: 2.30, unit: 'BLISTER', image: generatePlaceholder('consumabile', 'Comp') },
             { id: 'c38', name: 'Comprese sterile tifon bumbac 100% 5x5 cm (5 comprese/blister)', price_tva: 1.30, unit: 'BLISTER', image: generatePlaceholder('consumabile', 'Comp') },
             { id: 'c39', name: 'Fesi tifon 100% bumbac 10 cm x 10 m', price_tva: 3.57, unit: 'BUC', image: generatePlaceholder('consumabile', 'Fasa') },
@@ -340,7 +351,8 @@
         ];
         
         // Coșul de Cumpărături
-        let cart = {}; // { 'p1': { product: {...}, quantity: 2 }, ... }
+        // Cheia devine productId + Size (ex: 'm1_S') pentru a gestiona variațiile
+        let cart = {}; 
 
         // Elementele DOM
         const productListEl = document.getElementById('product-list');
@@ -375,7 +387,6 @@
             for (const id in cart) {
                 const item = cart[id];
                 // Prețul cu TVA (price_tva) conține deja TVA. 
-                // Pentru subtotal (fără TVA), calculăm prețul de bază.
                 const price_base = item.product.price_tva / (1 + VAT_RATE);
                 subtotal += price_base * item.quantity;
             }
@@ -403,18 +414,23 @@
                 cartItemCountMobileEl.textContent = items.reduce((sum, item) => sum + item.quantity, 0);
 
                 items.forEach(item => {
-                    // Scoaterea imaginii din cos pentru o lista mai concisa
+                    // Include mărimea în numele produsului pentru coș
+                    const sizeLabel = item.size ? ` (Mărimea: ${item.size})` : '';
+                    
                     const cartItemEl = document.createElement('div');
                     cartItemEl.className = 'flex items-center space-x-3 p-3 bg-gray-50 rounded-lg';
+                    // Folosim cartItemId (format: id_size) pentru butoanele de update
+                    const cartItemId = item.product.id + (item.size ? `_${item.size}` : ''); 
+
                     cartItemEl.innerHTML = `
                         <div class="flex-grow">
-                            <p class="text-sm font-semibold text-gray-800">${item.product.name}</p>
+                            <p class="text-sm font-semibold text-gray-800">${item.product.name}${sizeLabel}</p>
                             <p class="text-xs text-gray-500">${formatPrice(item.product.price_tva)} / ${item.product.unit}</p>
                         </div>
                         <div class="flex items-center space-x-2">
-                            <button onclick="updateQuantity('${item.product.id}', -1)" class="text-gray-500 hover:text-red-500 font-bold w-6 h-6 rounded-full border border-gray-300">-</button>
+                            <button onclick="updateQuantityCart('${cartItemId}', -1)" class="text-gray-500 hover:text-red-500 font-bold w-6 h-6 rounded-full border border-gray-300">-</button>
                             <span class="text-sm font-medium">${item.quantity}</span>
-                            <button onclick="updateQuantity('${item.product.id}', 1)" class="text-gray-500 hover:text-green-500 font-bold w-6 h-6 rounded-full border border-gray-300">+</button>
+                            <button onclick="updateQuantityCart('${cartItemId}', 1)" class="text-gray-500 hover:text-green-500 font-bold w-6 h-6 rounded-full border border-gray-300">+</button>
                         </div>
                     `;
                     cartItemsContainerEl.appendChild(cartItemEl);
@@ -427,34 +443,54 @@
             cartTotalEl.textContent = formatPrice(totals.total);
         };
 
-        /** Adaugă / Elimină din coș */
-        window.updateQuantity = (productId, change) => {
+        // Funcție dedicată pentru a actualiza cantitatea direct din coș
+        window.updateQuantityCart = (cartItemId, change) => {
+            if (!cart[cartItemId]) return;
+
+            cart[cartItemId].quantity += change;
+
+            if (cart[cartItemId].quantity <= 0) {
+                delete cart[cartItemId];
+            }
+            
+            // Nu mai actualizăm inputurile din lista de produse, deoarece ar putea fi o mărime diferită
+
+            renderCart();
+        };
+
+        /** Adaugă / Elimină din coș (Folosit de butoanele Adaugă) */
+        window.addToCart = (productId) => {
             const product = PRODUCTS_DATA.find(p => p.id === productId);
             if (!product) return;
 
-            if (!cart[productId]) {
-                cart[productId] = { product, quantity: 0 };
+            let size = null;
+            let cartItemId = productId;
+
+            // Dacă produsul are mărimi, preia mărimea selectată
+            if (product.sizes) {
+                const sizeSelect = document.getElementById(`size-${productId}`);
+                size = sizeSelect ? sizeSelect.value : null;
+
+                if (!size) {
+                    alert('Vă rugăm selectați o mărime!'); // Folosim alert doar pentru notificare simplă
+                    return;
+                }
+                cartItemId += `_${size}`;
             }
 
-            cart[productId].quantity += change;
-
-            if (cart[productId].quantity <= 0) {
-                delete cart[productId];
+            if (!cart[cartItemId]) {
+                cart[cartItemId] = { product, quantity: 0, size };
             }
+
+            cart[cartItemId].quantity += 1; // Adaugă o singură unitate la click
             
-            // Force quantity input update if it exists (for the product list)
-            const inputEl = document.getElementById('qty-' + productId);
-            if(inputEl) {
-                inputEl.value = cart[productId] ? cart[productId].quantity : 0;
-            }
-
             renderCart();
         };
 
         /** Golește Coșul */
         const clearCart = () => {
             cart = {};
-            // Reset quantity inputs on the product list
+            // Reset quantity inputs on the product list (doar pentru inputurile non-variante)
             PRODUCTS_DATA.forEach(p => {
                 const inputEl = document.getElementById('qty-' + p.id);
                 if(inputEl) {
@@ -465,64 +501,78 @@
             checkoutStatusEl.textContent = ''; // Șterge mesajul de status după golire
         }
 
+        /** Generează HTML pentru selectorul de mărime */
+        const renderSizeSelector = (product) => {
+            if (!product.sizes) return '';
+
+            // Selectorul de mărime
+            let optionsHtml = product.sizes.map(size => 
+                `<option value="${size}">${size}</option>`
+            ).join('');
+
+            return `
+                <div>
+                    <label for="size-${product.id}" class="block text-xs font-medium text-gray-700">Alege Mărimea:</label>
+                    <select id="size-${product.id}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500 focus:border-orange-500">
+                        <option value="" disabled selected>Selectează</option>
+                        ${optionsHtml}
+                    </select>
+                </div>
+            `;
+        };
+
         /** Generează produsele vizual pe pagină */
         const renderProducts = () => {
             document.getElementById('loading-spinner').style.display = 'none';
 
             PRODUCTS_DATA.forEach(product => {
                 const productEl = document.createElement('div');
-                productEl.className = 'bg-white p-5 rounded-xl shadow-lg hover:shadow-xl transition duration-300 flex flex-col justify-between';
+                // Noul stil de card, mai lung și mai subțire
+                productEl.className = 'bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-center justify-between';
                 
                 // Prețul pe unitate fără TVA
                 const price_base = product.price_tva / (1 + VAT_RATE);
 
+                const sizeSelectorHtml = renderSizeSelector(product);
+
                 productEl.innerHTML = `
                     <!-- Secțiunea de Imagine și Descriere -->
-                    <div class="flex items-start space-x-4 mb-4">
+                    <div class="flex items-start space-x-4 w-1/2">
                         <img src="${product.image}" alt="${product.name}" 
-                             class="product-image object-cover rounded-lg border border-gray-200 shadow-sm"
+                             class="product-image object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
                              onerror="this.onerror=null; this.src='https://placehold.co/80x80/cccccc/333333?text=Produs';">
                         <div class="flex-grow space-y-1">
-                            <h3 class="text-lg font-bold text-gray-800">${product.name}</h3>
-                            <p class="text-sm text-gray-600">Unitate: ${product.unit}</p>
+                            <h3 class="text-base font-bold text-gray-800">${product.name}</h3>
+                            <p class="text-xs text-gray-600">Unitate: ${product.unit}</p>
+                            <!-- Spațiu pentru selector mărime pe desktop -->
+                            <div class="hidden lg:block w-32 mt-2">${sizeSelectorHtml}</div> 
                         </div>
                     </div>
                     
                     <!-- Secțiunea de Preț și Acțiune -->
-                    <div class="space-y-2 pt-2 border-t border-gray-100">
-                        <p class="text-xl font-extrabold text-orange-600">${formatPrice(product.price_tva)} <span class="text-sm font-medium text-gray-500">(cu TVA)</span></p>
-                        <p class="text-xs text-gray-400">(${formatPrice(price_base)} fără TVA)</p>
-                        
-                        <div class="mt-4 flex items-center space-x-3">
-                            <input id="qty-${product.id}" type="number" min="0" value="0" data-product-id="${product.id}" class="w-16 p-2 border border-gray-300 rounded-lg text-center focus:ring-orange-500 focus:border-orange-500" 
-                                onchange="handleInputChange(this)">
-                            <button onclick="updateQuantity('${product.id}', 1)" class="flex-grow p-2 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition duration-150 flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                                Adaugă
-                            </button>
+                    <div class="space-y-2 w-1/2 flex items-center justify-end">
+                        <div class="text-right flex-shrink-0 mr-4">
+                            <p class="text-lg font-extrabold text-orange-600">${formatPrice(product.price_tva)}</p>
+                            <p class="text-xs text-gray-500">(cu TVA)</p>
+                            <!-- Selector mărime pe mobil -->
+                            <div class="lg:hidden mt-2">${sizeSelectorHtml}</div>
                         </div>
+                        
+                        <!-- Butonul de Adaugă/Cantitate. Am eliminat input-ul numeric direct -->
+                        <button onclick="addToCart('${product.id}')" class="p-2 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition duration-150 flex items-center justify-center h-12 w-32 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Adaugă
+                        </button>
                     </div>
                 `;
                 productListEl.appendChild(productEl);
             });
         };
         
-        /** Gestionează schimbarea cantității direct din input */
-        window.handleInputChange = (input) => {
-            const productId = input.getAttribute('data-product-id');
-            const newQuantity = parseInt(input.value) || 0;
-
-            const currentQuantity = cart[productId] ? cart[productId].quantity : 0;
-            const change = newQuantity - currentQuantity;
-
-            // Folosim updateQuantity pentru a aplica logica de adăugare/ștergere
-            updateQuantity(productId, change);
-
-            // Ne asigurăm că valoarea inputului este actualizată corect după logica coșului (ex: nu poate fi negativ)
-            input.value = cart[productId] ? cart[productId].quantity : 0;
-        }
+        /** Gestionează schimbarea cantității direct din input (funcționalitate eliminată, se folosește doar butonul Adaugă) */
+        // window.handleInputChange = (input) => { ... }
 
 
         /** Generează link-ul de email */
@@ -537,7 +587,8 @@
             // Construiește corpul comenzii
             let orderDetails = "Detalii Comanda:\n\n";
             items.forEach((item, index) => {
-                orderDetails += `${index + 1}. ${item.product.name} (Unitate: ${item.product.unit})\n`;
+                const sizeLine = item.size ? ` (Mărimea: ${item.size})` : '';
+                orderDetails += `${index + 1}. ${item.product.name}${sizeLine} (Unitate: ${item.product.unit})\n`;
                 orderDetails += `   - Cantitate: ${item.quantity}\n`;
                 orderDetails += `   - Preț/Unitate (cu TVA): ${formatPrice(item.product.price_tva)}\n`;
                 orderDetails += `   - Total Articol (cu TVA): ${formatPrice(item.product.price_tva * item.quantity)}\n\n`;
@@ -588,6 +639,8 @@ Adresă Livrare: ${clientAddress}
         // 3. Evenimente Butoane Checkout
         checkoutBtn.addEventListener('click', () => {
             if (Object.keys(cart).length > 0) {
+                // Ascunde coșul pe mobil înainte de a afișa modalul
+                document.body.classList.remove('cart-open');
                 // Afișează modalul de finalizare
                 emailModalEl.classList.remove('hidden');
                 emailModalEl.classList.add('flex');
@@ -614,6 +667,14 @@ Adresă Livrare: ${clientAddress}
                 checkoutStatusEl.className = 'mt-3 text-sm text-center text-red-500';
                 return;
             }
+            
+            // Verifică dacă coșul nu e gol înainte de a trimite
+            if (Object.keys(cart).length === 0) {
+                 checkoutStatusEl.textContent = 'Coșul de cumpărături este gol!';
+                 checkoutStatusEl.className = 'mt-3 text-sm text-center text-red-500';
+                 return;
+            }
+
 
             const mailtoLink = generateMailtoLink();
             
@@ -632,6 +693,7 @@ Adresă Livrare: ${clientAddress}
                 document.getElementById('nume-client').value = '';
                 document.getElementById('adresa-client').value = '';
                 document.getElementById('telefon-client').value = '';
+                checkoutStatusEl.textContent = ''; // Curăță statusul
             }, 1000);
         });
 
