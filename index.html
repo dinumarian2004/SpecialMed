@@ -16,25 +16,25 @@
         #cart-sidebar {
             transition: transform 0.3s ease-in-out;
             transform: translateX(100%); /* Ascuns inițial pe dreapta pe mobil */
+            max-width: 90%; /* Limitează lățimea pe mobil pentru un spațiu de siguranță */
         }
         .cart-open #cart-sidebar {
             transform: translateX(0); /* Vizibil pe mobil */
         }
         
         /* Modificări pentru a rezolva suprapunerea pe desktop */
-        /* Header-ul trebuie să fie cel mai de sus element (z-index: 50) */
         .sticky-header { 
             position: sticky;
             top: 0;
-            z-index: 50; /* Asigură că antetul este deasupra celorlalte elemente */
+            z-index: 50; 
         }
 
         @media (min-width: 1024px) {
-            /* Pe desktop, coșul este permanent vizibil și nu folosește transform */
+            /* Pe desktop, coșul este permanent vizibil */
             #cart-sidebar {
                 transform: translateX(0) !important;
                 position: static !important;
-                /* Asigură că sidebar-ul NU este fix pe desktop */
+                max-width: 100%;
             }
         }
 
@@ -49,6 +49,48 @@
             align-items: center;
             justify-content: space-between;
         }
+        /* Asigură că înălțimea coșului nu depășește ecranul pe mobil */
+        @media (max-width: 1023px) {
+            #cart-items-container {
+                max-height: 60vh;
+            }
+        }
+        
+        /* Optimizare Card Produs pentru Mobile (sub 1024px) */
+        @media (max-width: 1023px) {
+            .product-card-content {
+                display: flex;
+                flex-direction: column;
+                width: 100%; /* Ocupa toată lățimea */
+            }
+            .product-info {
+                width: 100%;
+            }
+            .product-actions {
+                width: 100%;
+                justify-content: space-between; /* Aliniere pe lățime */
+                flex-direction: row; /* Preț și buton Adaugă pe același rând */
+                margin-top: 1rem;
+            }
+            .product-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .product-actions > div {
+                text-align: left !important;
+                flex-grow: 1;
+            }
+            .product-actions button {
+                flex-shrink: 0;
+                width: 120px;
+            }
+            .product-info .lg\\:hidden { /* Selector mărime mobil */
+                display: block !important;
+            }
+            .product-info .hidden.lg\\:block { /* Selector mărime desktop ascuns */
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -56,7 +98,8 @@
     <!-- Header & Navbar (Am adăugat clasa sticky-header) -->
     <header class="bg-white shadow-md sticky-header">
         <div class="max-w-7xl mx-auto p-4 flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-orange-600">Special Med Shop</h1>
+            <!-- Pe mobil, fontul este puțin mai mic -->
+            <h1 class="text-xl md:text-2xl font-bold text-orange-600">Special Med Shop</h1>
             
             <!-- Navbar Butoane (Desktop) -->
             <nav class="hidden lg:flex space-x-6">
@@ -81,11 +124,11 @@
         <div class="lg:w-3/4 w-full">
             
             <!-- Despre Noi Section (Mutată în față cu textul original) -->
-            <section id="despre-section" class="mb-8 p-6 bg-white rounded-xl shadow-lg border-t-4 border-orange-500">
-                <h2 class="text-2xl font-bold mb-4 text-orange-600">Misiunea Special Med Shop</h2>
-                <p class="text-gray-700 mb-4">SPECIALMED continuă să ducă la îndeplinire misiunea asumată acum mai bine de 12 ani și anume sprijinirea creșterii calității actului medical, prin asigurarea de consumabile medicale, dezinfectanți, mobilier medical și servicii conexe cât mai complete și de calitate, accesibile personalului medical.</p>
+            <section id="despre-section" class="mb-8 p-4 md:p-6 bg-white rounded-xl shadow-lg border-t-4 border-orange-500">
+                <h2 class="text-xl md:text-2xl font-bold mb-4 text-orange-600">Misiunea Special Med Shop</h2>
+                <p class="text-sm md:text-base text-gray-700 mb-4">SPECIALMED continuă să ducă la îndeplinire misiunea asumată acum mai bine de 12 ani și anume sprijinirea creșterii calității actului medical, prin asigurarea de consumabile medicale, dezinfectanți, mobilier medical și servicii conexe cât mai complete și de calitate, accesibile personalului medical.</p>
                 
-                <h3 class="text-xl font-semibold text-gray-800 mb-3">De ce să ne alegeți? (Strategie de comunicare diferită)</h3>
+                <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-3">De ce să ne alegeți? (Strategie de comunicare diferită)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-700">
                     
                     <!-- Punct 1: Analiza si rapoarte de consum -->
@@ -106,13 +149,13 @@
                         <span><span class="font-bold">Prezentare Gratuită:</span> Oferim prezentare de produse gratuit.</span>
                     </div>
 
-                    <!-- Punct 6: Suport contabil / Termene de plata flexibile (MUTAT ÎN POZIȚIA 4) -->
+                    <!-- Punct 6: Suport contabil / Termene de plata flexibile -->
                     <div class="flex items-start space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="9" y1="14" x2="15" y2="14"/><line x1="9" y1="18" x2="15" y2="18"/></svg>
                         <span><span class="font-bold">Flexibilitate Financiară:</span> Suport contabil cu raport de facturi scadente și termene de plată flexibile.</span>
                     </div>
 
-                    <!-- Punct 4: Retur 30 de zile (MUTAT ÎN POZIȚIA 5) -->
+                    <!-- Punct 4: Retur 30 de zile -->
                     <div class="flex items-start space-x-2">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500 flex-shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.25 15.25a.75.75 0 0 0-1.5 0v3.5a1.5 1.5 0 0 1-1.5 1.5H6.75a1.5 1.5 0 0 1-1.5-1.5v-3.5a.75.75 0 0 0-1.5 0v3.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-3.5zm-8.25-8.5v11.5m3-8.5l-3-3-3 3"/></svg>
                         <span><span class="font-bold">Retur 30 Zile:</span> Posibilitate de retur timp de 30 de zile pentru produsele neconsumate (în ambalaj original, nedeteriorat).</span>
@@ -135,7 +178,7 @@
             
             <!-- Lista de Produse Section -->
             <section id="produse-section" class="pt-2">
-                <h2 class="text-3xl font-semibold mb-6 text-gray-800 border-b pb-2">Produse Disponibile</h2>
+                <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-800 border-b pb-2">Produse Disponibile</h2>
                 <!-- Schimbarea grid-cols-2 cu grid-cols-1 pentru a face produsele mai lungi și mai subțiri -->
                 <div id="product-list" class="grid grid-cols-1 gap-4"> 
                     <!-- Produsele vor fi generate aici de JavaScript -->
@@ -150,28 +193,24 @@
             </section>
 
             <!-- Contact Section (Mutată la final, dar încă accesibilă prin link) -->
-            <section id="contact-section" class="mt-16 pt-16 border-t border-gray-300 mb-10">
-                <h2 class="text-3xl font-semibold mb-6 text-gray-800 border-b pb-2">Contact</h2>
-                <div class="bg-white p-6 rounded-xl shadow-lg space-y-4">
+            <section id="contact-section" class="mt-16 pt-8 md:pt-16 border-t border-gray-300 mb-10">
+                <h2 class="text-2xl md:text-3xl font-semibold mb-6 text-gray-800 border-b pb-2">Contact</h2>
+                <div class="bg-white p-4 md:p-6 rounded-xl shadow-lg space-y-4">
                     <p class="text-lg font-medium text-orange-600">SC SPECIALMED DISTRIBUTION TECH SRL</p>
-                    <p class="text-gray-700">Sediu: București, Str Compozitorilor, Nr. 10, România</p>
+                    <p class="text-gray-700 text-sm md:text-base">Sediu: București, Str Compozitorilor, Nr. 10, România</p>
                     <div class="flex items-center space-x-2 text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-                        <span>Tel: 0765.32.89.45</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                        <span class="text-sm md:text-base">Tel: 0765.32.89.45</span>
                     </div>
                     <div class="flex items-center space-x-2 text-gray-700">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-1 8a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h12a2 2 0 012 2v10z" /></svg>
-                        <span>Email: <a href="mailto:vanzari.specialmed@gmail.com" class="text-blue-600 hover:text-blue-800">vanzari.specialmed@gmail.com</a></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-orange-600 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8m-1 8a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h12a2 2 0 012 2v10z" /></svg>
+                        <span class="text-sm md:text-base">Email: <a href="mailto:vanzari.specialmed@gmail.com" class="text-blue-600 hover:text-blue-800">vanzari.specialmed@gmail.com</a></span>
                     </div>
-                    
-                    <!-- Secțiunea despre Managerul Zonal a fost eliminată -->
-
                 </div>
             </section>
         </div>
 
         <!-- Coș de Cumpărături (Sidebar) -->
-        <!-- Pe desktop, coșul este parte din layout-ul normal (nu fixed) și se scrollează odată cu pagina -->
         <div id="cart-sidebar" class="fixed inset-y-0 right-0 w-full lg:w-1/4 max-w-sm bg-white shadow-xl p-6 border-l border-gray-100 z-20 lg:static lg:block lg:shadow-none lg:border-none">
             <div class="flex justify-between items-center mb-6 lg:hidden">
                 <h3 class="text-xl font-semibold text-gray-700">Coșul Meu</h3>
@@ -186,7 +225,6 @@
 
             <div id="cart-items-container" class="space-y-4 max-h-[60vh] overflow-y-auto mb-4">
                 <p id="empty-cart-message" class="text-gray-500 text-center py-4">Coșul este gol.</p>
-                <!-- Produsele din coș vor fi adăugate aici -->
             </div>
 
             <!-- Total -->
@@ -453,8 +491,6 @@
                 delete cart[cartItemId];
             }
             
-            // Nu mai actualizăm inputurile din lista de produse, deoarece ar putea fi o mărime diferită
-
             renderCart();
         };
 
@@ -511,8 +547,8 @@
             ).join('');
 
             return `
-                <div>
-                    <label for="size-${product.id}" class="block text-xs font-medium text-gray-700">Alege Mărimea:</label>
+                <div class="w-full">
+                    <label for="size-${product.id}" class="block text-xs font-medium text-gray-700 mb-1">Mărimea:</label>
                     <select id="size-${product.id}" class="mt-1 block w-full border border-gray-300 rounded-lg p-2 text-sm focus:ring-orange-500 focus:border-orange-500">
                         <option value="" disabled selected>Selectează</option>
                         ${optionsHtml}
@@ -528,7 +564,7 @@
             PRODUCTS_DATA.forEach(product => {
                 const productEl = document.createElement('div');
                 // Noul stil de card, mai lung și mai subțire
-                productEl.className = 'bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-center justify-between';
+                productEl.className = 'bg-white p-4 rounded-xl shadow-md hover:shadow-lg transition duration-300 flex items-start product-card';
                 
                 // Prețul pe unitate fără TVA
                 const price_base = product.price_tva / (1 + VAT_RATE);
@@ -537,28 +573,29 @@
 
                 productEl.innerHTML = `
                     <!-- Secțiunea de Imagine și Descriere -->
-                    <div class="flex items-start space-x-4 w-1/2">
+                    <div class="flex items-start space-x-4 product-info">
                         <img src="${product.image}" alt="${product.name}" 
                              class="product-image object-cover rounded-lg border border-gray-200 shadow-sm flex-shrink-0"
                              onerror="this.onerror=null; this.src='https://placehold.co/80x80/cccccc/333333?text=Produs';">
-                        <div class="flex-grow space-y-1">
+                        <div class="flex-grow space-y-1 w-full">
                             <h3 class="text-base font-bold text-gray-800">${product.name}</h3>
                             <p class="text-xs text-gray-600">Unitate: ${product.unit}</p>
-                            <!-- Spațiu pentru selector mărime pe desktop -->
-                            <div class="hidden lg:block w-32 mt-2">${sizeSelectorHtml}</div> 
+                            
+                            <!-- Selector mărime pe desktop (ascuns pe mobil) -->
+                            <div class="hidden lg:block w-40 mt-2">${sizeSelectorHtml}</div> 
                         </div>
                     </div>
                     
                     <!-- Secțiunea de Preț și Acțiune -->
-                    <div class="space-y-2 w-1/2 flex items-center justify-end">
+                    <div class="product-actions lg:space-y-2 lg:w-1/2 flex items-center justify-end">
                         <div class="text-right flex-shrink-0 mr-4">
                             <p class="text-lg font-extrabold text-orange-600">${formatPrice(product.price_tva)}</p>
                             <p class="text-xs text-gray-500">(cu TVA)</p>
-                            <!-- Selector mărime pe mobil -->
-                            <div class="lg:hidden mt-2">${sizeSelectorHtml}</div>
+                            <!-- Selector mărime pe mobil (vizibil pe mobil) -->
+                            <div class="lg:hidden mt-2 w-full">${sizeSelectorHtml}</div>
                         </div>
                         
-                        <!-- Butonul de Adaugă/Cantitate. Am eliminat input-ul numeric direct -->
+                        <!-- Butonul de Adaugă -->
                         <button onclick="addToCart('${product.id}')" class="p-2 py-3 bg-orange-500 text-white font-semibold rounded-lg hover:bg-orange-600 transition duration-150 flex items-center justify-center h-12 w-32 flex-shrink-0">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
